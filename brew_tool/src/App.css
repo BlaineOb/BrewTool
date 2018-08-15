@@ -1,0 +1,93 @@
+.App {
+  text-align: center;
+  background-color: #FFF8DC;
+  background-image: url("beer-wallpapers.jpg");
+  background-size: 2560px 1600px;
+  background-position: right top;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  text-align: center;
+  font-family: Impact, Charcoal, sans-serif;
+  font-size: 400%;
+  color: #FFCC11;
+  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.Bottom {
+  background-color: black;
+}
+
+.Home-button {
+  position: absolute;
+  left: 200px;
+  top: 35px;
+}
+
+.Recipe-button {
+  position: absolute;
+  left: 423px;
+  top: 35px;
+  color: white;
+}
+
+.ABV-button {
+  position: absolute;
+  left: 278px;
+  top: 35px;
+}
+
+.ABV-form {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.Calendar {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 300%;
+}
+
+.ABV-result {
+
+}
+
+.My-Modal {
+  text-align: center;
+}
+
+.New-Recipe-Form {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.List {
+  width: 950px;
+  margin-right: 500px;
+  background-color: transparent;
+}
+.Lista {
+  font-family: Tahoma, Geneva, sans-serif;
+  color: white;
+  font-size: 150%;
+  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
