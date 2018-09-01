@@ -7,7 +7,6 @@ class New_Brew_Form extends Component {
     this.state = {recName: '', date: '', data:[],};
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount(){
@@ -17,12 +16,6 @@ class New_Brew_Form extends Component {
   handleChange(event) {
     this.setState({[event.target.name]: event.target.value},
     () => this.props.change(this.state.recName,this.state.date));
-  }
-
-  handleSubmit(event) {
-    var nm = this.state.recName;
-    var dt = this.state.date;
-
   }
 
   render() {

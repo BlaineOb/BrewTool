@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "moment": "^2.22.2",
     "react": "^16.4.1",
+    "react-big-calendar": "^0.19.2",
     "react-bootstrap": "^0.32.1",
     "react-bootstrap-modal": "^4.1.1",
     "react-bootstrap-table": "^4.3.1",

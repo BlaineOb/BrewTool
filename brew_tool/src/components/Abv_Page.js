@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import {Button} from 'react-bootstrap';
-import Abv_Form from './Abv_Form';
+import AbvForm from './Abv_Form';
+import StrikeForm from './Strike_Form';
 import '../App.css';
 
 class Abv_Page extends Component {
@@ -8,7 +8,8 @@ class Abv_Page extends Component {
   render() {
     return(
       <div>
-        <Abv_Form orig="Original Gravity (OG): " final="Final Gravity (FG): "/>
+        <AbvForm/>
+        <StrikeForm/>
       </div>
     );
   }

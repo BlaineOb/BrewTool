@@ -1,9 +1,11 @@
 .App {
   text-align: center;
-  background-color: #FFF8DC;
+  background-color: #000000;
   background-image: url("beer-wallpapers.jpg");
   background-size: 2560px 1600px;
+  background-repeat: no-repeat;
   background-position: right top;
+  overflow-x: hidden;
 }
 
 .App-logo {
@@ -36,21 +38,36 @@
 
 .Home-button {
   position: absolute;
-  left: 200px;
+  left: 100px;
   top: 35px;
 }
 
 .Recipe-button {
   position: absolute;
-  left: 423px;
+  left: 393px;
   top: 35px;
   color: white;
 }
 
-.ABV-button {
+.Delete-button {
   position: absolute;
-  left: 278px;
+  left: 534px;
   top: 35px;
+  color: white;
+}
+
+.Calculators-button {
+  position: absolute;
+  left: 178px;
+  top: 35px;
+}
+
+.ABV-label {
+  color: white;
+  font-size: 150%;
+  margin-left: auto;
+  margin-right: 900px;
+  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 }
 
 .ABV-form {
@@ -60,10 +77,15 @@
 }
 
 .Calendar {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  height: 300%;
+  height: 1000px;
+  color: white;
+  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
+
+.Calendar-button {
+  position: absolute;
+  left: 293px;
+  top: 35px;
 }
 
 .ABV-result {
@@ -90,4 +112,12 @@
   color: white;
   font-size: 150%;
   text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
+
+.Strike-title {
+  color: #FFCC11;
+  font-size: 200%;
+  font-family: Impact, Charcoal, sans-serif;
+  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+  margin-right: 900px;
 }

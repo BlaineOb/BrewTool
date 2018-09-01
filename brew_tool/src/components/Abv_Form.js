@@ -19,20 +19,25 @@ class Abv_Form extends Component {
     var fg = parseFloat(this.state.final);
     var result = (og - fg) * 131.25;
     var result2 = (og - fg)/(og - 1.0) * 100;
-    this.setState({abv: result, attenuation: result2});
+    if (isNaN(result)) {
+      alert('Fill in all fields with numbers before submitting.');
+    } else {
+      this.setState({abv: result, attenuation: result2});
+    }
     event.preventDefault();
   }
 
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <label>
-          {this.props.orig}
+        <p className='Strike-title'>ABV Calculator</p>
+        <label className='ABV-label'>
+          {"Original Gravity (OG): "}
           <input type="text" name="orig" className="ABV-form" onChange={this.handleChange} />
-          {this.props.final}
+          {"Final Gravity (FG): "}
           <input type="text" name="final" className="ABV-form" onChange={this.handleChange} />
           <input type="submit" value="Submit" name="sub" onClick={this.handleSubmit}/>
-          <p>{"ABV: " + this.state.abv.toFixed(2) + "%  Attenuation: " + this.state.attenuation}</p>
+          <p>{"ABV: " + this.state.abv.toFixed(2) + "%  Attenuation: " + this.state.attenuation.toFixed(0) + "%"}</p>
         </label>
       </form>
     );
