@@ -333,7 +333,7 @@ public class MyJerseyPage {
 		      String sql = "SELECT * FROM RECIPE_NAME";
 		      ResultSet rs = stmt.executeQuery(sql);
 		      boolean found = false;
-		      int curr_id = 1;
+		      int rec_name_id = 1;
 		      
 		      //STEP 5: Extract data from result set
 		      while(rs.next()){
@@ -341,37 +341,36 @@ public class MyJerseyPage {
 		    	  String rec_name = rs.getString("NAME");
 		    	  if (nm.equals(rec_name)) {
 		    		  found = true;
-		    		  curr_id = rs.getInt("RECIPE_NAME_ID");
+		    		  rec_name_id = rs.getInt("RECIPE_NAME_ID");
 		    		  break;
 		    	  }
-		    	  curr_id++;
 		      }
 		      rs.close();
 		      
-		      //Get total rows in recipe table so far
-	    	  int total = -1;
-	    	  sql = "SELECT COUNT (*) FROM RECIPE";
+		      //Get max id in recipe table so far
+	    	  int rec_id = -1;
+	    	  sql = "SELECT MAX(RECIPE_ID) FROM RECIPE";
 	    	  rs = stmt.executeQuery(sql);
 	    	  rs.next();
-	    	  total = rs.getInt("COUNT") + 1;
+	    	  rec_id = rs.getInt("MAX") + 1;
 		      
-		      if (found) {
-		    	  
+		      if (found) {		    	  
 		    	  //Create new Recipe entry with correct recipe_name_id and recipe_id
 		    	  sql = "INSERT INTO RECIPE (recipe_id, recipe_name_id, date) VALUES "
-		    	  		+ "(" + total + "," + curr_id + ",\'" + dt + "\')";
-		    	  stmt.executeUpdate(sql);	    	  
-		    	  
-		      } else {
-		    	  
+		    	  		+ "(" + rec_id + "," + rec_name_id + ",\'" + dt + "\')";
+		    	  stmt.executeUpdate(sql);	    	  	    	  
+		      } else {		    	  
+		    	  sql = "SELECT MAX(RECIPE_NAME_ID) FROM RECIPE_NAME";
+		    	  rs = stmt.executeQuery(sql);
+		    	  rs.next();
+		    	  rec_name_id = rs.getInt("MAX") + 1;		    	  
 		    	  //Insert new Recipe_Name entry
-		    	  sql = "INSERT INTO RECIPE_NAME (name, recipe_name_id) VALUES (\'" + nm + "\'," + curr_id + ")";
+		    	  sql = "INSERT INTO RECIPE_NAME (name, recipe_name_id) VALUES (\'" + nm + "\'," + rec_name_id + ")";
 		    	  System.out.println(sql);
-		    	  stmt.executeUpdate(sql);
-		    	  
+		    	  stmt.executeUpdate(sql);		    	  
 		    	  //Create new Recipe entry with correct recipe_name_id and recipe_id
 		    	  sql = "INSERT INTO RECIPE (recipe_id, recipe_name_id, date) VALUES "
-			    	  		+ "(" + total + "," + curr_id + ",\'" + dt + "\')";
+			    	  		+ "(" + rec_id + "," + rec_name_id + ",\'" + dt + "\')";
 		    	  System.out.println(sql);
 		    	  stmt.executeUpdate(sql);	 
 		      }
