@@ -11,6 +11,7 @@ import javax.json.*;
 import java.util.ArrayList;
 
 import Model.Ingredient;
+import Model.Recipe;
 import Service.DataService;
 import org.json.*;
 
@@ -77,104 +78,13 @@ public class BrewToolController {
 		return Response.ok().entity(json_list).header("Access-Control-Allow-Origin", "*").build();
 	}
 
-
 	@POST @Path("/post_recipe") @Produces(MediaType.APPLICATION_JSON)
-	public Response recipes(String clientStuff) {
-
-		Connection conn = null;
-		Statement stmt = null;
-		JsonBuilderFactory factory = Json.createBuilderFactory(null);
-		ArrayList<JsonObject> recipes = new ArrayList<JsonObject>(); 
-		JSONObject jsonOb = new JSONObject(clientStuff);
-		
-		System.out.println(jsonOb.toString());
-		String nm = jsonOb.getString("name");
-		String dt = jsonOb.getString("date");
-		System.out.println(nm + " " + dt);
-		int b_id = 0;
-		   try{
-		      //STEP 2: Register JDBC driver
-		      Class.forName(JDBC_DRIVER);
-
-		      //STEP 3: Open a connection
-		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		      System.out.println("Connected database successfully...");
-		      
-		      //STEP 4: Execute a query
-		      System.out.println("Creating statement...");
-		      stmt = conn.createStatement();
-
-		      String sql = "SELECT * FROM RECIPE_NAME";
-		      ResultSet rs = stmt.executeQuery(sql);
-		      boolean found = false;
-		      int rec_name_id = 1;
-		      
-		      //STEP 5: Extract data from result set
-		      while(rs.next()){
-		         //Check if name exists already
-		    	  String rec_name = rs.getString("NAME");
-		    	  if (nm.equals(rec_name)) {
-		    		  found = true;
-		    		  rec_name_id = rs.getInt("RECIPE_NAME_ID");
-		    		  break;
-		    	  }
-		      }
-		      rs.close();
-		      
-		      //Get max id in recipe table so far
-	    	  int rec_id = -1;
-	    	  sql = "SELECT MAX(RECIPE_ID) FROM RECIPE";
-	    	  rs = stmt.executeQuery(sql);
-	    	  rs.next();
-	    	  rec_id = rs.getInt("MAX") + 1;
-		      
-		      if (found) {		    	  
-		    	  //Create new Recipe entry with correct recipe_name_id and recipe_id
-		    	  sql = "INSERT INTO RECIPE (recipe_id, recipe_name_id, date) VALUES "
-		    	  		+ "(" + rec_id + "," + rec_name_id + ",\'" + dt + "\')";
-		    	  stmt.executeUpdate(sql);	    	  	    	  
-		      } else {		    	  
-		    	  sql = "SELECT MAX(RECIPE_NAME_ID) FROM RECIPE_NAME";
-		    	  rs = stmt.executeQuery(sql);
-		    	  rs.next();
-		    	  rec_name_id = rs.getInt("MAX") + 1;		    	  
-		    	  //Insert new Recipe_Name entry
-		    	  sql = "INSERT INTO RECIPE_NAME (name, recipe_name_id) VALUES (\'" + nm + "\'," + rec_name_id + ")";
-		    	  System.out.println(sql);
-		    	  stmt.executeUpdate(sql);		    	  
-		    	  //Create new Recipe entry with correct recipe_name_id and recipe_id
-		    	  sql = "INSERT INTO RECIPE (recipe_id, recipe_name_id, date) VALUES "
-			    	  		+ "(" + rec_id + "," + rec_name_id + ",\'" + dt + "\')";
-		    	  System.out.println(sql);
-		    	  stmt.executeUpdate(sql);	 
-		      }
-		   }catch(SQLException se){
-		      //Handle errors for JDBC
-		      se.printStackTrace();
-		   }catch(Exception e){
-		      //Handle errors for Class.forName
-		      e.printStackTrace();
-		   }finally{
-		      //finally block used to close resources
-		      try{
-		         if(stmt!=null)
-		            conn.close();
-		      }catch(SQLException se){
-		      }// do nothing
-		      try{
-		         if(conn!=null)
-		            conn.close();
-		      }catch(SQLException se){
-		         se.printStackTrace();
-		      }//end finally try
-		   }//end try
-		   String json_list = recipes.toString();
-		   System.out.println("Goodbye!");
-		   
-	    return Response.ok() //200
-	    		.entity(clientStuff)
-				.header("Access-Control-Allow-Origin", "*").build();
+	public Response recipes(String clientInput) {
+		Recipe recipe = logic.createRecipe(clientInput);
+		String sql = "SELECT * FROM RECIPE_NAME WHERE NAME=\'" + recipe.getName() + "\'"; //TODO: check this works
+		ResultSet rs = dataService.queryDatabase(sql);
+		logic.insertRecipe(rs,recipe);
+	    return Response.ok().entity(clientInput).header("Access-Control-Allow-Origin", "*").build();
 	}
 	
 	@POST @Path("/delete_recipe/{recName}/{recDate}") @Produces(MediaType.APPLICATION_JSON)
