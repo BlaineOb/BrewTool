@@ -1,0 +1,32 @@
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <servlet >
+    <servlet-name >HelloWorld Jersey Service </servlet-name >
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer </servlet-class >
+    <init-param >
+      <param-name >com.sun.jersey.config.property.packages</param-name >
+      <param-value >Controller</param-value >
+    </init-param >
+    <init-param>
+      <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+      <param-value>true</param-value>
+	</init-param>
+	<init-param>
+      <param-name>com.sun.jersey.config.feature.DisableWADL</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <load-on-startup >1 </load-on-startup >
+  </servlet >
+  <servlet-mapping >
+    <servlet-name >HelloWorld Jersey Service </servlet-name >
+    <url-pattern >/b/*</url-pattern >
+  </servlet-mapping >
+  <resource-env-ref>
+    <resource-env-ref-name>jdbc/BrewTool</resource-env-ref-name>
+    <resource-env-ref-type>javax.sql.DataSource</resource-env-ref-type>
+  </resource-env-ref> 
+</web-app>
