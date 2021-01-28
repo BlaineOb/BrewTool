@@ -12,20 +12,13 @@ import java.sql.*;
 import javax.json.*;
 import java.util.ArrayList;
 
-
 import Service.DataService;
 import org.json.*;
 
+import static Utils.Constants.*;
+
 @Path("/home")
 public class BrewToolController {
-
-	// JDBC driver name and database URL
-	private static final String JDBC_DRIVER = "org.postgresql.Driver";
-	private static final String DB_URL = "jdbc:postgresql://localhost:5433/BrewTool";
-
-	//  Database credentials
-	private static final String USER = "dod";
-	private static final String PASS = "1";
 
 	private final DataService dataService = new DataService();
 	private final JsonObjectExtractor extractor = new JsonObjectExtractor();
@@ -104,7 +97,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -177,7 +170,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -244,7 +237,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -300,7 +293,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -351,7 +344,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -427,7 +420,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -477,7 +470,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -528,7 +521,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -604,7 +597,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -655,7 +648,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -705,7 +698,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -766,7 +759,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -818,7 +811,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -868,7 +861,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -952,7 +945,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query
@@ -1002,7 +995,7 @@ public class BrewToolController {
 
 		      //STEP 3: Open a connection
 		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
 		      System.out.println("Connected database successfully...");
 		      
 		      //STEP 4: Execute a query

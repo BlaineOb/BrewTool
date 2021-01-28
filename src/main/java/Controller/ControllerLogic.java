@@ -3,7 +3,6 @@ package Controller;
 import Service.DataService;
 import org.json.JSONObject;
 
-import javax.json.JsonObject;
 import Model.Ingredient;
 import Model.Recipe;
 import java.sql.ResultSet;

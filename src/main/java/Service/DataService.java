@@ -2,12 +2,10 @@ package Service;
 
 import java.sql.*;
 
+import static Utils.Constants.*;
+
 public class DataService {
 
-    private static final String JDBC_DRIVER = "org.postgresql.Driver";
-    private static final String DB_URL = "jdbc:postgresql://localhost:5433/BrewTool";
-    private static final String DB_USER = "dod";
-    private static final String DB_PASS = "1";
     private Connection conn;
     private Statement stmt;
 
