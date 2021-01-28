@@ -1,4 +1,4 @@
-package java.Controller;
+package Controller;
 
 import javax.json.Json;
 import javax.json.JsonBuilderFactory;

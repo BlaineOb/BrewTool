@@ -1,11 +1,11 @@
-package java.Controller;
+package Controller;
 
 import Service.DataService;
 import org.json.JSONObject;
 
 import javax.json.JsonObject;
-import java.Model.Ingredient;
-import java.Model.Recipe;
+import Model.Ingredient;
+import Model.Recipe;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
