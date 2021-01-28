@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class ControllerLogic {
 
-    private DataService dataService;
+    private final DataService dataService;
 
     public ControllerLogic(DataService dataService) {
         this.dataService = dataService;
@@ -32,74 +32,53 @@ public class ControllerLogic {
                 jsonOb.getString("date"));
     }
 
-    public void insertIngredient(ResultSet rs, Ingredient ingredient) {
-        try {
-            if (rs.next()) {
-                updateExistingIngredient(rs, ingredient);
-            } else {
-                createNewIngredientEntry(ingredient);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void insertIngredient(ResultSet rs, Ingredient ingredient) throws SQLException {
+        if (rs.next()) {
+            updateExistingIngredient(rs, ingredient);
+        } else {
+            createNewIngredientEntry(ingredient);
         }
+        rs.close();
     }
 
-    public void insertRecipe(ResultSet rs, Recipe recipe) {
+    public void insertRecipe(ResultSet rs, Recipe recipe) throws SQLException {
         String recName = recipe.getName();
         String recDate = recipe.getDate();
         int recipeNameId = getRecipeNameId(rs, recName);
-        int recId = getRecipeId();
-        String sql = "INSERT INTO RECIPE (recipe_id, recipe_name_id, date) VALUES "
-                + "(" + recId + "," + recipeNameId + ",\'" + recDate + "\')";
-        dataService.updateDatabase(sql);
+        int recId = getNextId("RECIPE", "RECIPE_ID");
+        dataService.updateDatabase("INSERT INTO RECIPE (recipe_id, recipe_name_id, date) VALUES "
+                + "(" + recId + "," + recipeNameId + ",\'" + recDate + "\')");
     }
 
-    private int getRecipeId() {
-        int recipeId = 0;
-        try {
-            recipeId = getNextId("RECIPE", "RECIPE_ID");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return recipeId;
-    }
-
-    private int getRecipeNameId(ResultSet rs, String recName) {
+    private int getRecipeNameId(ResultSet rs, String recName) throws SQLException {
         int recNameId = 0;
-        try {
-            if(rs.next()) {
-                recNameId = rs.getInt("RECIPE_NAME_ID");
-            } else {
-                recNameId = getNextId("RECIPE_NAME", "RECIPE_NAME_ID");
-                insertRecipeName(recName, recNameId);
-            }
-            rs.close();
-        } catch(SQLException e) {
-            e.printStackTrace();
+        if(rs.next()) {
+            recNameId = rs.getInt("RECIPE_NAME_ID");
+        } else {
+            recNameId = getNextId("RECIPE_NAME", "RECIPE_NAME_ID");
+            insertRecipeName(recName, recNameId);
         }
+        rs.close();
         return recNameId;
     }
 
     private void insertRecipeName(String recName, int recipeNameId) {
-        String sql = "INSERT INTO RECIPE_NAME (name, recipe_name_id) VALUES (\'" + recName + "\'," + recipeNameId + ")";
-        dataService.updateDatabase(sql);
+        dataService.updateDatabase("INSERT INTO RECIPE_NAME (name, recipe_name_id) VALUES (\'" + recName + "\'," + recipeNameId + ")");
     }
 
     private void createNewIngredientEntry(Ingredient ingredient) throws SQLException {
-        String sql;
         int nextId = getNextId("INGREDIENT", "ID");
-        sql = "INSERT INTO INGREDIENT VALUES (\'" + ingredient.getName() + "\'," + nextId + ",\'" + ingredient.getType() + "\')";
-        dataService.updateDatabase(sql);
-        sql = "INSERT INTO RECIPE_INGREDIENT VALUES (" + ingredient.getRecipeId()+ "," + nextId + ",\'" + ingredient.getAmount() + "\')";
-        dataService.updateDatabase(sql);
+        dataService.updateDatabase("INSERT INTO INGREDIENT VALUES (\'" + ingredient.getName() + "\'," + nextId + ",\'" + ingredient.getType() + "\')");
+        dataService.updateDatabase("INSERT INTO RECIPE_INGREDIENT VALUES (" + ingredient.getRecipeId()+ "," + nextId + ",\'" + ingredient.getAmount() + "\')");
     }
 
     private int getNextId(String table, String idColumnName) throws SQLException {
-        String sql;
-        sql = "SELECT MAX(" + idColumnName + ") FROM " + table;
-        ResultSet rs = dataService.queryDatabase(sql);
+        int default_id = 0;
+        ResultSet rs = dataService.queryDatabase("SELECT MAX(" + idColumnName + ") FROM " + table);
         rs.next();
-        return rs.getInt("MAX") + 1;
+        default_id = rs.getInt("MAX") + 1;
+        rs.close();
+        return default_id;
     }
 
     private void updateExistingIngredient(ResultSet rs, Ingredient ingredient) throws SQLException {
@@ -114,16 +93,53 @@ public class ControllerLogic {
         return correctName.replaceAll("&", "/");
     }
 
-    public void removeIngredient(String recID, String amount, ResultSet rs) {
-        try {
-            if (rs.next()) {
-                int ing_ID = rs.getInt("ID");
-                String sql = "DELETE FROM RECIPE_INGREDIENT WHERE RECIPE_ID = " + recID
-                        + " AND INGREDIENT_ID = " + ing_ID + " AND AMOUNT = \'" + amount + "\'";
-                dataService.updateDatabase(sql);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void removeIngredient(String recID, String amount, ResultSet rs) throws SQLException {
+        if (rs.next()) {
+            int ing_ID = rs.getInt("ID");
+            String sql = "DELETE FROM RECIPE_INGREDIENT WHERE RECIPE_ID = " + recID
+                    + " AND INGREDIENT_ID = " + ing_ID + " AND AMOUNT = \'" + amount + "\'";
+            dataService.updateDatabase(sql);
         }
+        rs.close();
+    }
+
+    public void deleteRecipe(String recName, String correct_date) throws SQLException {
+        int nameID = getNameID(recName);
+        int recID = getRecID(correct_date, nameID);
+        deleteRecipeFromTables(recID);
+    }
+
+    private void deleteRecipeFromTables(int recID) {
+        String[] tableDeletions = {
+                "DELETE FROM RECIPE_INGREDIENT WHERE RECIPE_ID = ",
+                "DELETE FROM MASH WHERE RECIPE_ID = ",
+                "DELETE FROM BOIL WHERE RECIPE_ID = ",
+                "DELETE FROM STATS WHERE RECIPE_ID = ",
+                "DELETE FROM MISCELLANEOUS WHERE RECIPE_ID = ",
+                "DELETE FROM RECIPE WHERE RECIPE_ID = "
+        };
+        for (String tableDeletion : tableDeletions) {
+            String sql = tableDeletion + recID;
+            dataService.updateDatabase(sql);
+        }
+    }
+
+    private int getRecID(String correct_date, int nameID) throws SQLException {
+        ResultSet rs;
+        String sql = "SELECT RECIPE_ID FROM RECIPE WHERE RECIPE_NAME_ID = " + nameID + " AND DATE = \'" + correct_date + "\'";
+        rs = dataService.queryDatabase(sql);
+        rs.next();
+        int recID = rs.getInt("RECIPE_ID");
+        rs.close();
+        return recID;
+    }
+
+    private int getNameID(String recName) throws SQLException {
+        String sql = "SELECT RECIPE_NAME_ID FROM RECIPE_NAME WHERE NAME = \'" + recName + "\'";
+        ResultSet rs = dataService.queryDatabase(sql);
+        rs.next();
+        int nameID = rs.getInt("RECIPE_NAME_ID");
+        rs.close();
+        return nameID;
     }
 }

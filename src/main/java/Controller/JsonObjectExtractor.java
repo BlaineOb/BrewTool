@@ -17,9 +17,9 @@ public class JsonObjectExtractor {
 
     public List<JsonObject> extractJSONList(ResultSet rs,String[] columnNames, String[] propertyNames) {
         try {
-            while(rs.next())
+            while(rs.next()) {
                 buildJSONObject(rs, columnNames, propertyNames);
-
+            }
             rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -28,9 +28,9 @@ public class JsonObjectExtractor {
     }
 
     private void buildJSONObject(ResultSet rs, String[] columnNames, String[] propertyNames) throws SQLException {
-        for (int i = 0; i < columnNames.length; i++)
+        for (int i = 0; i < columnNames.length; i++) {
             builder.add(propertyNames[i], rs.getString(columnNames[i]));
-
+        }
         JsonObject jsonObject = builder.build();
         jsonList.add(jsonObject);
     }

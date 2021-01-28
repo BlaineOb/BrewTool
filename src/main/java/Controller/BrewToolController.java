@@ -25,12 +25,12 @@ public class BrewToolController {
 	private final ControllerLogic logic = new ControllerLogic(dataService);
 	
 	@GET @Path("/hello") @Produces(MediaType.TEXT_HTML)
-	public String sayHtmlHello() {
+	public String healthCheck() {
 		return "Hello from Jersey";
 	}
 	
 	@GET @Path("/get_ingredient/{recID}") @Produces(MediaType.APPLICATION_JSON)
-	public Response ingredients(@PathParam("recID") String recID) {
+	public Response getIngredients(@PathParam("recID") String recID) {
 		String sql = "SELECT INGREDIENT.NAME, RECIPE_INGREDIENT.AMOUNT, INGREDIENT.TYPE FROM "
 			   + "INGREDIENT INNER JOIN RECIPE_INGREDIENT ON INGREDIENT.ID = RECIPE_INGREDIENT.INGREDIENT_ID "
 			   + "AND RECIPE_ID = " + recID + " ORDER BY INGREDIENT.TYPE";
@@ -41,7 +41,7 @@ public class BrewToolController {
 	}
 
 	@POST @Path("/post_ingredient") @Produces(MediaType.APPLICATION_JSON)
-	public Response post_ingredient(String clientInput) {
+	public Response postIngredient(String clientInput) throws SQLException {
 		Ingredient ingredient = logic.createIngredient(clientInput);
 		String sql = "SELECT ID FROM INGREDIENT WHERE NAME = \'" + ingredient.getName() + "\'";
 		ResultSet rs = dataService.queryDatabase(sql);
@@ -50,9 +50,9 @@ public class BrewToolController {
 	}
 		
 	@POST @Path("/delete_ingredient/{recID}/{ingName}/{amount}") @Produces(MediaType.APPLICATION_JSON)
-	public Response delete_ingredients(@PathParam("recID") String recID,
-									   @PathParam("ingName") String ingName,
-									   @PathParam("amount") String amount) {
+	public Response deleteIngredients(@PathParam("recID") String recID,
+									  @PathParam("ingName") String ingName,
+									  @PathParam("amount") String amount) throws SQLException {
 		String correctName = logic.fixEscapedName(ingName);
 		String sql = "SELECT ID FROM INGREDIENT WHERE NAME = \'" + correctName + "\'";
 		ResultSet rs = dataService.queryDatabase(sql);
@@ -61,7 +61,7 @@ public class BrewToolController {
 	}
 
 	@GET @Path("/get_recipe") @Produces(MediaType.APPLICATION_JSON)
-	public Response recipes() {
+	public Response getRecipe() {
 		String sql = "SELECT RECIPE_NAME.NAME, RECIPE.DATE, RECIPE.RECIPE_ID FROM RECIPE INNER JOIN "
 				+ "RECIPE_NAME ON RECIPE_NAME.RECIPE_NAME_ID = RECIPE.RECIPE_NAME_ID"
 				+ " ORDER BY RECIPE.RECIPE_ID DESC";
@@ -73,7 +73,7 @@ public class BrewToolController {
 	}
 
 	@POST @Path("/post_recipe") @Produces(MediaType.APPLICATION_JSON)
-	public Response recipes(String clientInput) {
+	public Response postRecipe(String clientInput) throws SQLException {
 		Recipe recipe = logic.createRecipe(clientInput);
 		String sql = "SELECT * FROM RECIPE_NAME WHERE NAME=\'" + recipe.getName() + "\'"; //TODO: check this works
 		ResultSet rs = dataService.queryDatabase(sql);
@@ -82,83 +82,15 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/delete_recipe/{recName}/{recDate}") @Produces(MediaType.APPLICATION_JSON)
-	public Response recipes(@PathParam("recName") String recName,
-							@PathParam("recDate") String recDate) {
-
-		Connection conn = null;
-		Statement stmt = null;
-		JsonBuilderFactory factory = Json.createBuilderFactory(null);
+	public Response deleteRecipe(@PathParam("recName") String recName,
+								 @PathParam("recDate") String recDate) throws SQLException {
 		String correct_date = recDate.replaceAll("@","/");
-		
-
-		   try{
-		      //STEP 2: Register JDBC driver
-		      Class.forName(JDBC_DRIVER);
-
-		      //STEP 3: Open a connection
-		      System.out.println("Connecting to a selected database...");
-		      conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-		      System.out.println("Connected database successfully...");
-		      
-		      //STEP 4: Execute a query
-		      System.out.println("Creating statement...");
-		      stmt = conn.createStatement();
-
-		      String sql = "SELECT RECIPE_NAME_ID FROM RECIPE_NAME WHERE NAME = \'" + recName  + "\'";
-		      ResultSet rs = stmt.executeQuery(sql);
-		      rs.next();
-		      int nameID = rs.getInt("RECIPE_NAME_ID");
-		      
-		      sql = "SELECT RECIPE_ID FROM RECIPE WHERE RECIPE_NAME_ID = " + nameID + " AND DATE = \'" + correct_date + "\'";
-		      rs = stmt.executeQuery(sql);
-		      rs.next();
-		      int recID = rs.getInt("RECIPE_ID");
-		      System.out.println(recID);
-		      
-		      //STEP 5: Delete recipe data from all tables
-		      sql = "DELETE FROM RECIPE_INGREDIENT WHERE RECIPE_ID = " + recID;
-		      stmt.executeUpdate(sql);
-		      sql = "DELETE FROM MASH WHERE RECIPE_ID = " + recID;
-		      stmt.executeUpdate(sql);
-		      sql = "DELETE FROM BOIL WHERE RECIPE_ID = " + recID;
-		      stmt.executeUpdate(sql);
-		      sql = "DELETE FROM STATS WHERE RECIPE_ID = " + recID;
-		      stmt.executeUpdate(sql);
-		      sql = "DELETE FROM MISCELLANEOUS WHERE RECIPE_ID = " + recID;
-		      stmt.executeUpdate(sql);
-		      sql = "DELETE FROM RECIPE WHERE RECIPE_ID = " + recID;
-		      stmt.executeUpdate(sql);
-		      
-		      rs.close();
-		      
-		   }catch(SQLException se){
-		      //Handle errors for JDBC
-		      se.printStackTrace();
-		   }catch(Exception e){
-		      //Handle errors for Class.forName
-		      e.printStackTrace();
-		   }finally{
-		      //finally block used to close resources
-		      try{
-		         if(stmt!=null)
-		            conn.close();
-		      }catch(SQLException se){
-		      }// do nothing
-		      try{
-		         if(conn!=null)
-		            conn.close();
-		      }catch(SQLException se){
-		         se.printStackTrace();
-		      }//end finally try
-		   }//end try
-		   System.out.println("Goodbye!");
-		   
-	    return Response.ok() //200
-				.header("Access-Control-Allow-Origin", "*").build();
+		logic.deleteRecipe(recName, correct_date);
+	    return Response.ok().header("Access-Control-Allow-Origin", "*").build();
 	}
-	
+
 	@GET @Path("/get_boil/{recipe_id}") @Produces(MediaType.APPLICATION_JSON)
-	public Response boil(@PathParam("recipe_id") String recipe_id) {
+	public Response getBoil(@PathParam("recipe_id") String recipe_id) {
 		Connection conn = null;
 		Statement stmt = null;
 		JsonBuilderFactory factory = Json.createBuilderFactory(null);
@@ -221,7 +153,7 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/post_boil") @Produces(MediaType.APPLICATION_JSON)
-	public Response post_boil(String clientStuff) {
+	public Response postBoil(String clientStuff) {
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -276,9 +208,9 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/delete_boil/{recID}/{time}/{action}") @Produces(MediaType.APPLICATION_JSON)
-	public Response delete_boil(@PathParam("recID") String recID,
-								@PathParam("time") String time,
-								@PathParam("action") String action) {
+	public Response deleteBoil(@PathParam("recID") String recID,
+							   @PathParam("time") String time,
+							   @PathParam("action") String action) {
 
 		Connection conn = null;
 		Statement stmt = null;	
@@ -332,7 +264,7 @@ public class BrewToolController {
 	}
 	
 	@GET @Path("/get_stats/{recipe_ID}") @Produces(MediaType.APPLICATION_JSON)
-	public Response get_stats(@PathParam("recipe_ID") String recipe_id) {
+	public Response getStats(@PathParam("recipe_ID") String recipe_id) {
 		Connection conn = null;
 		Statement stmt = null;
 		JsonObject json_built = null;
@@ -401,7 +333,7 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/post_stats") @Produces(MediaType.APPLICATION_JSON)
-	public Response post_stats(String clientStuff) {
+	public Response postStats(String clientStuff) {
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -459,7 +391,7 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/delete_stats/{recID}") @Produces(MediaType.APPLICATION_JSON)
-	public Response delete_stats(@PathParam("recID") String recID) {
+	public Response deleteStats(@PathParam("recID") String recID) {
 
 		Connection conn = null;
 		Statement stmt = null;		
@@ -509,7 +441,7 @@ public class BrewToolController {
 	
 	
 	@GET @Path("/get_mash/{recipe_id}") @Produces(MediaType.APPLICATION_JSON)
-	public Response get_mash(@PathParam("recipe_id") String recipe_id) {
+	public Response getMash(@PathParam("recipe_id") String recipe_id) {
 		Connection conn = null;
 		Statement stmt = null;
 		JsonBuilderFactory factory = Json.createBuilderFactory(null);
@@ -577,7 +509,7 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/post_mash") @Produces(MediaType.APPLICATION_JSON)
-	public Response post_mash(String clientStuff) {
+	public Response postMash(String clientStuff) {
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -637,7 +569,7 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/delete_mash/{recID}") @Produces(MediaType.APPLICATION_JSON)
-	public Response delete_mash(@PathParam("recID") String recID) {
+	public Response deleteMash(@PathParam("recID") String recID) {
 
 		Connection conn = null;
 		Statement stmt = null;		
@@ -686,7 +618,7 @@ public class BrewToolController {
 	}
 	
 	@GET @Path("/get_misc/{recipe_id}") @Produces(MediaType.APPLICATION_JSON)
-	public Response get_misc(@PathParam("recipe_id") String recipe_id) {
+	public Response getMisc(@PathParam("recipe_id") String recipe_id) {
 		Connection conn = null;
 		Statement stmt = null;
 		JsonBuilderFactory factory = Json.createBuilderFactory(null);
@@ -744,7 +676,7 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/post_misc") @Produces(MediaType.APPLICATION_JSON)
-	public Response post_misc(String clientStuff) {
+	public Response postMisc(String clientStuff) {
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -798,8 +730,8 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/delete_misc/{recID}/{comment}") @Produces(MediaType.APPLICATION_JSON)
-	public Response delete_misc(@PathParam("recID") String recID,
-								 @PathParam("comment") String comment) {
+	public Response deleteMisc(@PathParam("recID") String recID,
+							   @PathParam("comment") String comment) {
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -849,7 +781,7 @@ public class BrewToolController {
 	}
 	
 	@GET @Path("/get_event") @Produces(MediaType.APPLICATION_JSON)
-	public Response get_event() {
+	public Response getEvent() {
 		Connection conn = null;
 		Statement stmt = null;
 		JsonBuilderFactory factory = Json.createBuilderFactory(null);
@@ -929,7 +861,7 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/post_event") @Produces(MediaType.APPLICATION_JSON)
-	public Response post_event(String clientStuff) {
+	public Response postEvent(String clientStuff) {
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -984,7 +916,7 @@ public class BrewToolController {
 	}
 	
 	@POST @Path("/delete_event/{evID}") @Produces(MediaType.APPLICATION_JSON)
-	public Response delete_event(@PathParam("evID") String evID) {
+	public Response deleteEvent(@PathParam("evID") String evID) {
 
 		Connection conn = null;
 		Statement stmt = null;		
